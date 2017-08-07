@@ -1,0 +1,84 @@
+<style type="text/css">
+	video {
+		margin-left: 10%;
+		width:80%;
+		height: 80%;
+	}
+	input { 
+		outline: none; 
+	}
+	#lightswitch{
+		height: 64px
+	}
+</style>
+<div id="main" style="height: 100%;width:100%">
+	<video id="video" autofocus controls autoplay></video>
+</div>
+<script type="text/javascript">
+	
+	// get the video and main element and sets the event listeners
+	var video = document.getElementById('video');
+	var main = document.getElementById('main');
+
+	main.addEventListener('click', function(){switchBackground()}, false);
+	video.addEventListener('click', function(event){playPause(event)}, false);
+	
+
+	//checks if the video should be paused or played and executes that
+	function playPause(event){
+		video.paused ? video.play() : video.pause();
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
+	// make the spacebar play/pause
+	document.onkeydown = function(e){
+		if((e || window.event).keyCode === 32){
+			playPause(e);
+		}
+	};
+
+	// util method to get the parrameter from the url 
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+
+	//switches the background from white to black and sets the cookie
+	function switchBackground(){
+		if(document.body.style.backgroundColor == 'black'){
+			document.body.style.backgroundColor = 'white';
+		}else{
+			document.body.style.backgroundColor = 'black';
+		}
+		document.cookie = document.body.style.backgroundColor;
+	}
+
+	// sets and gets the background preference from a cookie
+	function backgroundCookie(){
+		if(document.cookie.split(';')[0] !='black'){
+			document.cookie = 'white';
+		}
+		document.body.style.backgroundColor = document.cookie.split(';')[0];
+
+	}
+	
+	backgroundCookie();
+
+	//get the file parameter
+	var file = getParameterByName('file');
+	file = file.replace(new RegExp('_','g'),'.');
+	
+	//setting the file parameter to source
+	var source = document.createElement('source');
+	source.setAttribute('src','./' + file);
+
+	//add the video and play the video
+	video.appendChild(source);
+	video.play();
+</script>
